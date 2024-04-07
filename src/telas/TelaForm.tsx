@@ -1,7 +1,7 @@
-// src/telas/TelaForm.tsx
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+import { Text, TextInput, View, Button } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from "../styles/styles";
 
 export default function TelaForm({ navigation }) {
     const [titulo, setTitulo] = useState('');
@@ -12,44 +12,39 @@ export default function TelaForm({ navigation }) {
         const filme = { titulo, descricao, capa };
         try {
             await AsyncStorage.setItem('filme_' + Date.now(), JSON.stringify(filme));
-            navigation.goBack('TelaList', { refresh: true });
+            navigation.navigate('TelaList'); // Redireciona de volta para a tela de lista
         } catch (error) {
             console.error('Erro ao salvar o filme:', error);
         }
     };
 
     return (
-        <View>
-            <Text>Título</Text>
+        <View style={styles.container}>
+            <Text style={styles.label}>Título</Text>
             <TextInput
-                style={style.input}
+                style={styles.input}
                 value={titulo}
                 onChangeText={setTitulo}
+                placeholderTextColor="#a9a9a9"
             />
 
-            <Text>Descrição</Text>
+            <Text style={styles.label}>Descrição</Text>
             <TextInput
-                style={style.input}
+                style={styles.input}
                 value={descricao}
                 onChangeText={setDescricao}
+                placeholderTextColor="#a9a9a9"
             />
 
-            <Text>Capa (URL)</Text>
+            <Text style={styles.label}>Capa (URL)</Text>
             <TextInput
-                style={style.input}
+                style={styles.input}
                 value={capa}
                 onChangeText={setCapa}
+                placeholderTextColor="#a9a9a9"
             />
 
             <Button title="Salvar" onPress={salvarFilme} />
         </View>
     );
 }
-
-const style = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        width: 300,
-        height: 50,
-    }
-});

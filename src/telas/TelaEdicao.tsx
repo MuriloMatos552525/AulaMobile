@@ -1,63 +1,55 @@
-// src/telas/TelaEdicao.tsx
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+// TelaEdicao.tsx
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from "../styles/styles";
 
 export default function TelaEdicao({ route, navigation }) {
-    const [titulo, setTitulo] = useState('');
-    const [descricao, setDescricao] = useState('');
-    const [capa, setCapa] = useState('');
-
-    useEffect(() => {
-        const { filme } = route.params;
-        setTitulo(filme.titulo);
-        setDescricao(filme.descricao);
-        setCapa(filme.capa);
-    }, []);
+    const { filme } = route.params;
+    const [titulo, setTitulo] = useState(filme.titulo);
+    const [descricao, setDescricao] = useState(filme.descricao);
+    const [capa, setCapa] = useState(filme.capa);
 
     const salvarEdicao = async () => {
-        const { filme } = route.params;
-        const novoFilme = { ...filme, titulo, descricao, capa };
         try {
-            await AsyncStorage.setItem(filme.key, JSON.stringify(novoFilme));
+            const novoFilme = { ...filme, titulo, descricao, capa };
+            await AsyncStorage.mergeItem(filme.key, JSON.stringify(novoFilme));
             navigation.goBack();
         } catch (error) {
-            console.error('Erro ao salvar a edição do filme:', error);
+            console.error('Erro ao salvar a edição:', error);
         }
     };
 
     return (
-        <View>
-            <Text>Título</Text>
-            <TextInput
-                style={style.input}
-                value={titulo}
-                onChangeText={setTitulo}
-            />
-
-            <Text>Descrição</Text>
-            <TextInput
-                style={style.input}
-                value={descricao}
-                onChangeText={setDescricao}
-            />
-
-            <Text>Capa (URL)</Text>
-            <TextInput
-                style={style.input}
-                value={capa}
-                onChangeText={setCapa}
-            />
-
-            <Button title="Salvar" onPress={salvarEdicao} />
+        <View style={styles.container}>
+            <Text style={styles.header}>Editar Filme</Text>
+            <View style={styles.filmeContainer}>
+                <Text style={styles.label}>Título:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={titulo}
+                    onChangeText={setTitulo}
+                />
+            </View>
+            <View style={styles.filmeContainer}>
+                <Text style={styles.label}>Descrição:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={descricao}
+                    onChangeText={setDescricao}
+                />
+            </View>
+            <View style={styles.filmeContainer}>
+                <Text style={styles.label}>Capa (URL):</Text>
+                <TextInput
+                    style={styles.input}
+                    value={capa}
+                    onChangeText={setCapa}
+                />
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button title="Salvar" onPress={salvarEdicao} />
+            </View>
         </View>
     );
 }
-
-const style = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        width: 300,
-        height: 50,
-    }
-});

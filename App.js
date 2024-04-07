@@ -1,4 +1,3 @@
-// app.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,11 +6,15 @@ import TelaForm from './src/telas/TelaForm';
 import TelaList from './src/telas/TelaList';
 import TelaDetalhes from './src/telas/TelaDetalhes';
 import TelaEdicao from './src/telas/TelaEdicao';
+import { Platform } from 'react-native'; // Import adicionado para verificar a plataforma
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  AsyncStorage.clear(); // Limpa os dados de teste do AsyncStorage
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    AsyncStorage.clear(); // Limpa os dados de teste do AsyncStorage apenas no ambiente de desenvolvimento
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="TelaList">
