@@ -3,7 +3,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import TelaForm from './src/telas/TelaForm';
 import TelaList from './src/telas/TelaList';
 import TelaDetalhes from './src/telas/TelaDetalhes';
