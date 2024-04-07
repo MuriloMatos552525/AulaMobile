@@ -1,41 +1,58 @@
-import { Avatar, Button, Icon, ListItem, Text } from "react-native-elements";
-import { FlatList,View } from "react-native";
-import dadosUsuario from "../dados/DadosUsuarios";
+// src/telas/TelaList.tsx
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, View, Image, Button } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export default function TelaList({ navigation }) {
+    const [filmes, setFilmes] = useState([]);
 
-function getUsuarios({item}){
-    return(
-        <ListItem >
-            <Avatar source={{uri: item.fotoPerfil}} rounded size={60}/>
-            <ListItem.Content>
-                <ListItem.Title>{item.nome}</ListItem.Title>
-                <ListItem.Subtitle>{item.email}</ListItem.Subtitle>
-            </ListItem.Content>
+    const carregarFilmes = async () => {
+        try {
+            const keys = await AsyncStorage.getAllKeys();
+            const filmesArray = await AsyncStorage.multiGet(keys);
+            setFilmes(filmesArray.map(([key, value]) => ({ key, ...JSON.parse(value) })));
+        } catch (error) {
+            console.error('Erro ao carregar os filmes:', error);
+        }
+    };
 
-            <ListItem.Content right style={{flexDirection:'row'}}>
-                <Button 
-                    icon={<Icon name='edit' color='orange' />} 
-                    type="clear"
-                />
-                <Button 
-                    icon={<Icon name='delete' color='red' />} 
-                    type="clear"
-                />
-            </ListItem.Content>
-            
-        </ListItem>
-    )
-}
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            carregarFilmes();
+        });
 
-export default props =>{
+        return unsubscribe;
+    }, [navigation]);
 
-    return(
+    const deletarFilme = async (key) => {
+        try {
+            await AsyncStorage.removeItem(key);
+            carregarFilmes(); // Atualiza a lista de filmes após a exclusão
+        } catch (error) {
+            console.error('Erro ao deletar o filme:', error);
+        }
+    };
+
+    const renderFilme = ({ item }) => (
         <View>
-        <Text>TELA LISTAGEM</Text>
-        <FlatList
-            data={dadosUsuario}
-            renderItem={getUsuarios}
-        />
+            <Image source={{ uri: item.cartaz }} style={{ width: 100, height: 150 }} />
+            <Text>{item.titulo}</Text>
+            <Text>{item.descricao}</Text>
+            <Button title="Excluir" onPress={() => deletarFilme(item.key)} />
+            <Button title="Detalhes" onPress={() => navigation.navigate('TelaDetalhes', { filme: item })} />
+            <Button title="Editar" onPress={() => navigation.navigate('TelaEdicao', { filme: item })} />
         </View>
-    )
+    );
+
+    return (
+        <View>
+            <Text>Lista de Filmes</Text>
+            <FlatList
+                data={filmes}
+                renderItem={renderFilme}
+                keyExtractor={(item) => item.key}
+            />
+            <Button title="Adicionar Filme" onPress={() => navigation.navigate('TelaForm')} />
+        </View>
+    );
 }

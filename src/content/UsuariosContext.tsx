@@ -1,5 +1,5 @@
 import React,{createContext} from "react";
-import DadosUsuarios from '../dados/DadosUsuarios'
+import DadosUsuarios from '../dados/DadosFilmes'
 const UsuarioContext = createContext({})
 
 export default UsuarioContext 

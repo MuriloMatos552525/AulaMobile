@@ -1,20 +1,28 @@
-// src/telas/TelaForm.tsx
-import React, { useState } from "react";
+// src/telas/TelaEdicao.tsx
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function TelaForm({ navigation }) {
+export default function TelaEdicao({ route, navigation }) {
     const [titulo, setTitulo] = useState('');
     const [descricao, setDescricao] = useState('');
     const [capa, setCapa] = useState('');
 
-    const salvarFilme = async () => {
-        const filme = { titulo, descricao, capa };
+    useEffect(() => {
+        const { filme } = route.params;
+        setTitulo(filme.titulo);
+        setDescricao(filme.descricao);
+        setCapa(filme.capa);
+    }, []);
+
+    const salvarEdicao = async () => {
+        const { filme } = route.params;
+        const novoFilme = { ...filme, titulo, descricao, capa };
         try {
-            await AsyncStorage.setItem('filme_' + Date.now(), JSON.stringify(filme));
-            navigation.goBack('TelaList', { refresh: true });
+            await AsyncStorage.setItem(filme.key, JSON.stringify(novoFilme));
+            navigation.goBack();
         } catch (error) {
-            console.error('Erro ao salvar o filme:', error);
+            console.error('Erro ao salvar a edição do filme:', error);
         }
     };
 
@@ -41,7 +49,7 @@ export default function TelaForm({ navigation }) {
                 onChangeText={setCapa}
             />
 
-            <Button title="Salvar" onPress={salvarFilme} />
+            <Button title="Salvar" onPress={salvarEdicao} />
         </View>
     );
 }
